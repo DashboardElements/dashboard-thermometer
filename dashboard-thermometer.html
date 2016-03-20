@@ -147,9 +147,7 @@ Example:
       is: 'dashboard-thermometer',
 
       properties: {
-        /**
-         * The temperature (in degrees fahrenheit)
-         */
+        /** The temperature (in degrees fahrenheit) */
         temperature: {
           type: Number,
           notify: true,
@@ -169,27 +167,31 @@ Example:
         }
       },
 
+      // Element Behavior
+
       /**
        * Creates marker lines
+       *
        * @param x1 {number}
        * @param x2 {number}
        * @param y {number}
-       * @returns {Element}
+       * @returns {HTMLElement}
        * @private
        */
       _createLine: function createLine(x1, x2, y) {
         var line = document.createElementNS("http://www.w3.org/2000/svg", 'line');
 
-        line.setAttribute('x1', x1);
-        line.setAttribute('x2', x2);
-        line.setAttribute('y1', y);
-        line.setAttribute('y2', y);
+        line.setAttribute('x1', x1.toString());
+        line.setAttribute('x2', x2.toString());
+        line.setAttribute('y1', y.toString());
+        line.setAttribute('y2', y.toString());
 
         return line;
       },
 
       /**
        * Scales the mask as a percentage of temperature from 20 deg F to 100 deg F
+       *
        * @param temp {number}
        * @private
        */
