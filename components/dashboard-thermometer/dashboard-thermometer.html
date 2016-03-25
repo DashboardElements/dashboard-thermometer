@@ -1,0 +1,209 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../dashboard-layout/dashboard-layout.html">
+
+<!--
+A thermometer element.
+
+Example:
+
+    <dashboard-thermometer temperature="{{temp}}"></dashboard-thermometer>
+
+@demo demo/index.html
+@hero hero.svg
+-->
+
+<dom-module id="dashboard-thermometer">
+  <template>
+    <style>
+      :host {
+        @apply(--layout);
+        @apply(--height-8);
+        @apply(--width-2);
+        @apply(--buffer);
+        border: 0;
+      }
+
+      :host, svg {
+        width: calc(2 * var(--unit) - 2 * var(--margin));
+        height: calc(8 * var(--unit) - 2 * var(--margin));
+      }
+
+      #Mask > g {
+        transform: translate(30px, 224px) scale(-1);
+      }
+
+      #Mask rect {
+        width: 60px;
+        height: 241px;
+        animation: 2s drop ease-in-out;
+        transform: scaleY(var(--temp-scale, 0));
+        fill: white;
+      }
+
+      @keyframes drop {
+        50% {
+          transform: scaleY(0);
+        }
+      }
+
+      #main {
+        transform: translate(30px, 22px);
+      }
+
+      #main circle:last-of-type {
+        transform: translateY(199px);
+      }
+
+      #main rect {
+        height: 181px;
+        transform: translateX(-50%);
+      }
+
+      circle,
+      rect {
+        fill: var(--foreground-color, black);
+      }
+
+      #background > * {
+        fill: var(--background-color, white);
+      }
+
+      #foreground {
+        mask: url('#Mask');
+      }
+
+      #foreground > circle:first-of-type {
+        fill: var(--hot-color, red);
+      }
+
+      #foreground > circle:last-of-type {
+        fill: var(--cold-color, blue);
+      }
+
+      #foreground > rect {
+        fill: url('#grad');
+      }
+
+      #lines {
+        transform: translateY(180px) scale(-1);
+      }
+
+      line {
+        stroke: var(--foreground-color, black);
+        stroke-width: 1px;
+      }
+    </style>
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:red"/>
+          <stop offset="100%" style="stop-color:blue"/>
+        </linearGradient>
+        <mask id="Mask">
+          <g>
+            <rect/>
+          </g>
+        </mask>
+      </defs>
+      <g id="main">
+        <g id="outline">
+          <circle r="22"/>
+          <circle r="30"/>
+          <rect width="44"/>
+        </g>
+        <g id="background">
+          <circle r="20"/>
+          <circle r="28"/>
+          <rect width="40"/>
+        </g>
+        <g id="foreground">
+          <circle r="16"/>
+          <circle r="24"/>
+          <rect width="32"/>
+        </g>
+        <g id="lines"/>
+      </g>
+    </svg>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'dashboard-thermometer',
+
+      properties: {
+        /** The temperature (in degrees fahrenheit) */
+        temperature: {
+          type: Number,
+          notify: true,
+          observer: '_tempChanged'
+        }
+      },
+
+      // Element Lifecycle
+
+      ready: function() {
+        var lines = Polymer.dom(this.$.lines);
+
+        for (var i = 0; i <= 40; i++) {
+          lines.appendChild(
+            this._createLine(i % 5 ? 4 : -4, 16, i * 4.525)
+          );
+        }
+      },
+
+      // Element Behavior
+
+      /**
+       * Creates marker lines
+       *
+       * @param x1 {number}
+       * @param x2 {number}
+       * @param y {number}
+       * @returns {HTMLElement}
+       * @private
+       */
+      _createLine: function createLine(x1, x2, y) {
+        var line = document.createElementNS("http://www.w3.org/2000/svg", 'line');
+
+        line.setAttribute('x1', x1.toString());
+        line.setAttribute('x2', x2.toString());
+        line.setAttribute('y1', y.toString());
+        line.setAttribute('y2', y.toString());
+
+        return line;
+      },
+
+      /**
+       * Scales the mask as a percentage of temperature from 20 deg F to 100 deg F
+       *
+       * @param temp {number}
+       * @private
+       */
+      _tempChanged: function(temp) {
+        var scale;
+
+        if (temp > 100) {
+          scale = 1;
+        } else if (temp < 20) {
+          scale = 0;
+        } else {
+          scale = (temp - 20) / 80;
+        }
+
+        this.customStyle['--temp-scale'] = scale.toString();
+        this.updateStyles();
+      }
+    });
+  </script>
+</dom-module>
