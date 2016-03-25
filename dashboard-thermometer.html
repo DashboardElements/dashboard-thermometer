@@ -80,7 +80,7 @@ Example:
       }
 
       #foreground {
-        mask: url(#Mask);
+        mask: url('#Mask');
       }
 
       #foreground > circle:first-of-type {
@@ -92,7 +92,7 @@ Example:
       }
 
       #foreground > rect {
-        fill: url(#grad);
+        fill: url('#grad');
       }
 
       #lines {
@@ -112,8 +112,8 @@ Example:
         </linearGradient>
         <mask id="Mask">
           <g>
-            <rect>
-          </g>d
+            <rect/>
+          </g>
         </mask>
       </defs>
       <g id="main">
@@ -133,11 +133,6 @@ Example:
           <rect width="32"/>
         </g>
         <g id="lines"/>
-      </g>
-      <g id="Mask2">
-        <g>
-          <rect>
-        </g>
       </g>
     </svg>
   </template>
